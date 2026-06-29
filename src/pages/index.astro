@@ -3,11 +3,12 @@ import Base from '../layouts/Base.astro';
 import { SITE } from '../config';
 
 // Clients featured in the social-proof strip
+// scale = optical nudge (1 = default). Square icon+wordmark logos read large, so trim them slightly.
 const clients = [
-  { name: 'Gamersupps', logo: '/assets/clients/gamersupps.png' },
-  { name: 'KappaMart', logo: '/assets/clients/kappamart.png' },
-  { name: 'Wakuma', logo: '/assets/clients/wakuma.png' },
-  { name: 'Fantech', logo: '/assets/clients/fantech.png' },
+  { name: 'Gamersupps', logo: '/assets/clients/gamersupps.png', scale: 1.08 },
+  { name: 'KappaMart', logo: '/assets/clients/kappamart.png', scale: 1 },
+  { name: 'Wakuma', logo: '/assets/clients/wakuma.png', scale: 0.92 },
+  { name: 'Fantech', logo: '/assets/clients/fantech.png', scale: 0.9 },
 ];
 
 // Service schema for SEO
@@ -177,7 +178,7 @@ const serviceJsonLd = {
         <div class="head center" data-reveal><p class="eyebrow">Trusted by</p><h2>Brands we've worked with.</h2></div>
         <div class="clients__row" data-reveal>
           {clients.map((c) => (
-            <img class="clients__logo" src={c.logo} alt={`${c.name} logo`} loading="lazy" />
+            <img class="clients__logo" src={c.logo} alt={`${c.name} logo`} style={`--s:${c.scale}`} loading="lazy" />
           ))}
         </div>
         <div class="head center" data-reveal style="margin-top:64px"><p class="eyebrow">What clients say</p></div>
