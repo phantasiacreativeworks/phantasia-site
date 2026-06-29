@@ -1,0 +1,62 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { POSTS_PER_PAGE } from '../../../config';
+
+export async function getStaticPaths({ paginate }) {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  );
+  // page/1 == /blog, so only generate page/2 and beyond
+  const pages = paginate(posts, { pageSize: POSTS_PER_PAGE });
+  return pages.filter((p) => p.params.page !== '1');
+}
+
+const { page } = Astro.props;
+
+function readingTime(body) {
+  return Math.max(1, Math.round(body.trim().split(/\s+/).length / 200));
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+const prevUrl = page.currentPage === 2 ? '/blog' : `/blog/page/${page.currentPage - 1}`;
+const nextUrl = page.currentPage < page.lastPage ? `/blog/page/${page.currentPage + 1}` : null;
+---
+
+<Base title={`Blog — Page ${page.currentPage}`} description="More articles from Phantasia Creative Works." noindex={true}>
+  <main>
+    <section class="blog-hero">
+      <div class="wrap">
+        <p class="eyebrow">Blog</p>
+        <h1>Notes from the studio.</h1>
+      </div>
+    </section>
+    <section class="section" style="padding-top:20px">
+      <div class="wrap">
+        <div class="post-grid">
+          {page.data.map((post) => (
+            <a class="post-card" href={`/blog/${post.id}`}>
+              <div class="post-card__img"><img src={post.data.cover || '/assets/portfolio/hero.jpg'} alt={post.data.title} loading="lazy" /></div>
+              <div class="post-card__body">
+                <div class="post-card__meta">
+                  {post.data.tags[0] && <span class="post-card__tag">{post.data.tags[0]}</span>}
+                  <span class="dot-sep"></span><span>{fmtDate(post.data.date)}</span>
+                  <span class="dot-sep"></span><span>{readingTime(post.body)} min read</span>
+                </div>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+                <span class="post-card__more">Read article →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <nav class="pagination" aria-label="Pagination">
+          <a href={prevUrl}>← Prev</a>
+          <span class="current">{page.currentPage} / {page.lastPage}</span>
+          {nextUrl ? <a href={nextUrl}>Next →</a> : <span class="disabled">Next →</span>}
+        </nav>
+      </div>
+    </section>
+  </main>
+</Base>

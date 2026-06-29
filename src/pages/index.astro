@@ -1,0 +1,262 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config';
+
+// Clients featured in the social-proof strip
+const clients = [
+  { name: 'Gamersupps', logo: '/assets/clients/gamersupps.png' },
+  { name: 'KappaMart', logo: '/assets/clients/kappamart.png' },
+  { name: 'Wakuma', logo: '/assets/clients/wakuma.png' },
+  { name: 'Fantech', logo: '/assets/clients/fantech.png' },
+];
+
+// Service schema for SEO
+const serviceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'Custom 3D design',
+  provider: { '@type': 'Organization', name: SITE.name, url: SITE.domain },
+  areaServed: 'Worldwide',
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: '3D services',
+    itemListElement: [
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Character sculpting' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Product design' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Game assets' } },
+    ],
+  },
+};
+---
+
+<Base jsonLd={serviceJsonLd}>
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow" data-reveal>Custom 3D Studio</p>
+          <h1 class="display hero__title" data-reveal data-delay="1">Transforming ideas into reality.</h1>
+          <p class="hero__sub" data-reveal data-delay="2">Custom 3D for characters, products, and games. You imagine it, we build it.</p>
+          <div class="hero__actions" data-reveal data-delay="3">
+            <a class="btn btn--primary" href="#contact">Start a project</a>
+            <a class="btn btn--ghost" href="#portfolio">View portfolio</a>
+          </div>
+          <span class="hero__badge" data-reveal data-delay="3"><span class="dot"></span> Available for projects</span>
+        </div>
+        <div class="hero__visual" data-reveal data-delay="2">
+          <img src="/assets/portfolio/hero.jpg" alt="Featured 3D character render by Phantasia Creative Works" width="1100" height="1100" fetchpriority="high" />
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST STRIP -->
+    <div class="strip">
+      <div class="wrap strip__inner">
+        <div class="strip__item"><b>Characters</b><span>sculpted from scratch</span></div>
+        <div class="strip__item"><b>Products</b><span>concept to production</span></div>
+        <div class="strip__item"><b>Game assets</b><span>built for engines</span></div>
+        <div class="strip__item"><b>Files</b><span>ready to be made</span></div>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <section id="services" class="section">
+      <div class="wrap">
+        <div class="head" data-reveal>
+          <p class="eyebrow">Services</p>
+          <h2>What we make.</h2>
+        </div>
+        <div class="svc-grid">
+          <article class="svc" data-reveal>
+            <div class="svc__ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path></svg></div>
+            <h3>Character sculpting</h3>
+            <p>Original characters, OCs, and figurines sculpted from the ground up.</p>
+          </article>
+          <article class="svc" data-reveal data-delay="1">
+            <div class="svc__ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"></path><path d="M3 7l9 5 9-5M12 12v10"></path></svg></div>
+            <h3>Product design</h3>
+            <p>Lamps, bottles, keycaps, and custom products, modeled ready to manufacture.</p>
+          </article>
+          <article class="svc" data-reveal data-delay="2">
+            <div class="svc__ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path></svg></div>
+            <h3>Game assets</h3>
+            <p>Clean, optimized characters and props that drop straight into your engine.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO -->
+    <section id="portfolio" class="section section--tight" style="background:var(--bg-2);border-block:1px solid var(--line)">
+      <div class="wrap">
+        <div class="head" data-reveal>
+          <p class="eyebrow">Portfolio</p>
+          <h2>Selected work.</h2>
+        </div>
+        <div class="pgrid" data-reveal>
+          <figure class="pcard"><img src="/assets/portfolio/character-1.jpg" alt="Chibi anime swordsman character sculpt modeled for figurine printing" width="800" height="1000" loading="lazy" /><span class="pcard__bubble">Character Sculpting</span></figure>
+          <figure class="pcard"><img src="/assets/portfolio/product-1.jpg" alt="Cat-ear shaker water bottle product design rendered in purple" width="800" height="1000" loading="lazy" /><span class="pcard__bubble">Product Design</span></figure>
+          <figure class="pcard"><img src="/assets/portfolio/game-1.jpg" alt="Stylized male game character holding a sword, rendered in engine" width="800" height="1000" loading="lazy" /><span class="pcard__bubble">Game Asset</span></figure>
+          <figure class="pcard"><img src="/assets/portfolio/character-3.jpg" alt="Detailed female anime character sculpt with flowing hair for figurine printing" width="800" height="1000" loading="lazy" /><span class="pcard__bubble">Character Sculpting</span></figure>
+          <figure class="pcard"><img src="/assets/portfolio/game-2.jpg" alt="Cat-eared schoolgirl game character in a sailor uniform, rendered in engine" width="800" height="1000" loading="lazy" /><span class="pcard__bubble">Game Asset</span></figure>
+          <figure class="pcard"><img src="/assets/portfolio/product-2.jpg" alt="Custom keycap product design rendered in studio lighting" width="800" height="1000" loading="lazy" /><span class="pcard__bubble">Product Design</span></figure>
+        </div>
+        <div style="text-align:center;margin-top:36px">
+          <a class="viewall" href={SITE.youtube} target="_blank" rel="noopener">View all work →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section id="process" class="section">
+      <div class="wrap">
+        <div class="head" data-reveal>
+          <p class="eyebrow">Process</p>
+          <h2>From idea to finished file.</h2>
+        </div>
+        <div class="steps">
+          <div class="step" data-reveal><div class="step__n">01</div><h4>Share a reference</h4><p>Send sketches, photos, or just a description. Whatever you have works.</p></div>
+          <div class="step" data-reveal data-delay="1"><div class="step__n">02</div><h4>We sculpt and detail</h4><p>Shape first, then the details. You review along the way.</p></div>
+          <div class="step" data-reveal data-delay="2"><div class="step__n">03</div><h4>You get the files</h4><p>A turntable render and a production-ready file, made to last.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="section section--tight" style="background:var(--bg-2);border-block:1px solid var(--line)">
+      <div class="wrap">
+        <div class="head" data-reveal>
+          <p class="eyebrow">Pricing</p>
+          <h2>Simple, scoped pricing.</h2>
+          <p class="lead">Three tiers that scale with detail. Every project includes a render and a file you keep.</p>
+        </div>
+        <div class="price-list" data-reveal>
+          <div class="price-row">
+            <div><h4>Standard</h4><p>Clean and simple work</p></div>
+            <div class="amt"><span class="amt__price"><strong>$100</strong> <span>– 400</span></span><span class="amt__eta">~1–2 weeks</span></div>
+            <a class="btn btn--ghost" href="#contact">Get started</a>
+          </div>
+          <div class="price-row">
+            <div><h4>Premium</h4><p>Detailed, the popular choice</p></div>
+            <div class="amt"><span class="amt__price"><strong>$400</strong> <span>– 600</span></span><span class="amt__eta">~2–3 weeks</span></div>
+            <a class="btn btn--primary" href="#contact">Get started</a>
+          </div>
+          <div class="price-row">
+            <div><h4>Deluxe</h4><p>Full detail, plus a print where it applies</p></div>
+            <div class="amt"><span class="amt__price"><strong>$600</strong> <span>– 1000</span></span><span class="amt__eta">~3–4 weeks</span></div>
+            <a class="btn btn--ghost" href="#contact">Get started</a>
+          </div>
+        </div>
+        <p class="price-license">Commercial licensing is available upon request.</p>
+      </div>
+    </section>
+
+    <!-- AVAILABILITY -->
+    <section id="availability" class="section">
+      <div class="wrap avail">
+        <div data-reveal>
+          <span class="avail__status"><span class="dot"></span> Open for projects</span>
+          <h2>A few slots at a time.</h2>
+          <p class="lead" style="margin-top:14px">Short list, better work. Here's what's open right now.</p>
+          <div class="hero__actions" style="margin-top:24px"><a class="btn btn--primary" href="#contact">Book a slot</a></div>
+        </div>
+        <div class="slots" id="slots" data-reveal data-delay="1">
+          <div class="slot"><span class="slot__n">01</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill="80%"></i></span><span class="slot__pct">80%</span></span></div>
+          <div class="slot"><span class="slot__n">02</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill="50%"></i></span><span class="slot__pct">50%</span></span></div>
+          <div class="slot"><span class="slot__n">03</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill="20%"></i></span><span class="slot__pct">20%</span></span></div>
+          <div class="slot slot--open"><span class="slot__n">04</span><span class="slot__label">Open</span><span class="slot__bar">Available</span></div>
+          <div class="slot slot--open"><span class="slot__n">05</span><span class="slot__label">Open</span><span class="slot__bar">Available</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section id="testimonials" class="section section--tight" style="background:var(--bg-2);border-block:1px solid var(--line)">
+      <div class="wrap">
+        <div class="head center" data-reveal><p class="eyebrow">Trusted by</p><h2>Brands we've worked with.</h2></div>
+        <div class="clients__row" data-reveal>
+          {clients.map((c) => (
+            <img class="clients__logo" src={c.logo} alt={`${c.name} logo`} loading="lazy" />
+          ))}
+        </div>
+        <div class="head center" data-reveal style="margin-top:64px"><p class="eyebrow">What clients say</p></div>
+        <div class="quotes">
+          <figure class="quote" data-reveal>
+            <div class="quote__stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>Amazing quality work, friendly and clear communication throughout and frequent updates — would definitely recommend working with them!</blockquote>
+            <figcaption><span class="quote__avatar" aria-hidden="true"></span><span class="quote__name">yenshuii</span></figcaption>
+          </figure>
+          <figure class="quote" data-reveal data-delay="1">
+            <div class="quote__stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>Amazing work, very detailed and respectful to the design. The quality is impeccable and everything was very clear. It was a pleasure to work with.</blockquote>
+            <figcaption><span class="quote__avatar" aria-hidden="true"></span><span class="quote__name">Leane</span></figcaption>
+          </figure>
+          <figure class="quote" data-reveal data-delay="2">
+            <div class="quote__stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>Absolutely amazing work, loved working with them!</blockquote>
+            <figcaption><span class="quote__avatar" aria-hidden="true"></span><span class="quote__name">Violuna</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section section--tight">
+      <div class="wrap">
+        <div class="head center" data-reveal><p class="eyebrow">Good to know</p><h2>Common questions.</h2></div>
+        <div class="faq" data-reveal>
+          <div class="qa"><button class="qa__q">How does payment work?<span class="qa__ic"></span></button><div class="qa__a"><p>Half up front to start, the rest before final files. Invoices hold for 72 hours.</p></div></div>
+          <div class="qa"><button class="qa__q">How many revisions do I get?<span class="qa__ic"></span></button><div class="qa__a"><p>Up to five rounds while we sculpt and detail. Major reworks after rendering are billed separately, since they reset a lot of work.</p></div></div>
+          <div class="qa"><button class="qa__q">How long does a project take?<span class="qa__ic"></span></button><div class="qa__a"><p>Most projects take two weeks to a month, depending on detail and scope.</p></div></div>
+          <div class="qa"><button class="qa__q">Who owns the final work?<span class="qa__ic"></span></button><div class="qa__a"><p>You get full personal use. We keep the right to show it in our portfolio. Full rights can transfer on request.</p></div></div>
+          <div class="qa"><button class="qa__q">Can I use it commercially?<span class="qa__ic"></span></button><div class="qa__a"><p>Yes, with a separate commercial license. Mention it early and we'll sort the details.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section cta">
+      <div class="wrap">
+        <div class="cta__panel" data-reveal>
+          <p class="cta__eyebrow">Start your project</p>
+          <h2 class="cta__title">Have an idea? Let's build it.</h2>
+          <p class="cta__sub">Send a reference and the rest is easy. Most projects start within a week.</p>
+          <div class="cta__actions">
+            <a class="btn btn--whatsapp" href={SITE.whatsapp} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8.9-.3.2-.5 0a6.6 6.6 0 0 1-3.3-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3c-.2.3-.9.9-.9 2.1s.9 2.5 1 2.6a9.3 9.3 0 0 0 3.7 3.3c1.4.5 1.9.6 2.6.5.4-.1 1.4-.6 1.6-1.1s.2-1 .1-1.1z"></path></svg>
+              Message on WhatsApp
+            </a>
+          </div>
+          <a class="cta__email" href={`mailto:${SITE.email}`}>or email the studio</a>
+          <p class="cta__trust"><span class="dot"></span> Usually replies within a day</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    /* FAQ accordion + availability bars (homepage only) */
+    document.querySelectorAll('.qa__q').forEach(function (q) {
+      q.addEventListener('click', function () {
+        var qa = q.parentElement, a = q.nextElementSibling, open = qa.classList.contains('open');
+        document.querySelectorAll('.qa').forEach(function (x) { x.classList.remove('open'); x.querySelector('.qa__a').style.maxHeight = null; });
+        if (!open) { qa.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+      });
+    });
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      var slots = document.getElementById('slots');
+      if (slots) {
+        slots.querySelectorAll('.bar>i').forEach(function (el) { el.style.setProperty('--target', el.getAttribute('data-fill')); });
+        if (reduce) slots.classList.add('filled');
+        else {
+          var io2 = new IntersectionObserver(function (es) {
+            es.forEach(function (e) { if (e.isIntersecting) { slots.classList.add('filled'); io2.disconnect(); } });
+          }, { threshold: 0.35 });
+          io2.observe(slots);
+        }
+      }
+    })();
+  </script>
+</Base>

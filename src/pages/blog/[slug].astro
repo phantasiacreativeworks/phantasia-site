@@ -1,0 +1,173 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { SITE } from '../../config';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  );
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      prev: posts[i + 1] || null,
+      next: posts[i - 1] || null,
+      related: posts.filter((p) => p.id !== post.id).slice(0, 3),
+    },
+  }));
+}
+
+const { post, prev, next, related } = Astro.props;
+const { Content, headings } = await render(post);
+
+function readingTime(body) {
+  return Math.max(1, Math.round(body.trim().split(/\s+/).length / 200));
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+const rt = readingTime(post.body);
+const cover = post.data.cover || '/assets/portfolio/hero.jpg';
+const url = `${SITE.domain}/blog/${post.id}`;
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  image: new URL(cover, SITE.domain).href,
+  datePublished: post.data.date.toISOString(),
+  author: { '@type': 'Organization', name: post.data.author },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    logo: { '@type': 'ImageObject', url: new URL('/assets/logo.png', SITE.domain).href },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+};
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.domain },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE.domain}/blog` },
+    { '@type': 'ListItem', position: 3, name: post.data.title, item: url },
+  ],
+};
+const shareText = encodeURIComponent(post.data.title);
+const shareUrl = encodeURIComponent(url);
+---
+
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  image={cover}
+  type="article"
+  publishedTime={post.data.date.toISOString()}
+  author={post.data.author}
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
+  <main class="article">
+    <div class="wrap">
+      <div class="article__head">
+        {post.data.tags[0] && <span class="article__tag">{post.data.tags[0]}</span>}
+        <h1 class="article__title">{post.data.title}</h1>
+        <div class="article__meta">
+          <span>{post.data.author}</span>
+          <span class="dot-sep"></span>
+          <span>{fmtDate(post.data.date)}</span>
+          <span class="dot-sep"></span>
+          <span>{rt} min read</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="article__cover">
+        <img src={cover} alt={post.data.title} width="1000" height="563" />
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="article__layout">
+        <article class="prose">
+          <Content />
+
+          <div class="share">
+            <span>Share</span>
+            <a href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener" aria-label="Share on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.9h3.6l-7.9 9 9.3 12.3h-7.3l-5.7-7.5-6.5 7.5H.8l8.4-9.6L0 1.9h7.5l5.2 6.9 6.2-6.9zm-1.3 19h2L7.1 3.8H5z"></path></svg></a>
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noopener" aria-label="Share on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.3v7A10 10 0 0 0 22 12z"></path></svg></a>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener" aria-label="Share on LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.3 2.4 4.3 5.5v6.2zM5.3 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM7.1 20.4H3.5V9h3.6v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.5c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7c0-.9-.8-1.7-1.8-1.7z"></path></svg></a>
+            <a href={`mailto:?subject=${shareText}&body=${shareUrl}`} aria-label="Share by email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg></a>
+          </div>
+        </article>
+
+        {toc.length > 0 && (
+          <aside class="toc" aria-label="Table of contents">
+            <h4>On this page</h4>
+            <ul id="toc-list">
+              {toc.map((h) => (
+                <li><a href={`#${h.slug}`} class={h.depth === 3 ? 'toc-h3' : ''}>{h.text}</a></li>
+              ))}
+            </ul>
+          </aside>
+        )}
+      </div>
+    </div>
+
+    <div class="wrap">
+      <nav class="prevnext" aria-label="More articles">
+        {prev ? (
+          <a href={`/blog/${prev.id}`}><small>← Previous</small><b>{prev.data.title}</b></a>
+        ) : <span></span>}
+        {next ? (
+          <a class="nx" href={`/blog/${next.id}`}><small>Next →</small><b>{next.data.title}</b></a>
+        ) : <span></span>}
+      </nav>
+    </div>
+
+    {related.length > 0 && (
+      <section class="related section">
+        <div class="wrap">
+          <h3>Related articles</h3>
+          <div class="post-grid">
+            {related.map((p) => (
+              <a class="post-card" href={`/blog/${p.id}`}>
+                <div class="post-card__img"><img src={p.data.cover || '/assets/portfolio/hero.jpg'} alt={p.data.title} loading="lazy" /></div>
+                <div class="post-card__body">
+                  <div class="post-card__meta">
+                    {p.data.tags[0] && <span class="post-card__tag">{p.data.tags[0]}</span>}
+                    <span class="dot-sep"></span><span>{readingTime(p.body)} min read</span>
+                  </div>
+                  <h2>{p.data.title}</h2>
+                  <p>{p.data.description}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
+
+  <script is:inline>
+    /* TOC active highlight on scroll */
+    (function () {
+      var links = Array.prototype.slice.call(document.querySelectorAll('#toc-list a'));
+      if (!links.length) return;
+      var map = {};
+      links.forEach(function (l) { map[l.getAttribute('href').slice(1)] = l; });
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) {
+            links.forEach(function (l) { l.classList.remove('active'); });
+            if (map[e.target.id]) map[e.target.id].classList.add('active');
+          }
+        });
+      }, { rootMargin: '-80px 0px -70% 0px' });
+      document.querySelectorAll('.prose h2, .prose h3').forEach(function (h) { if (h.id) io.observe(h); });
+    })();
+  </script>
+</Base>

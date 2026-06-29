@@ -1,0 +1,81 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { POSTS_PER_PAGE } from '../../config';
+
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const posts = allPosts.slice(0, POSTS_PER_PAGE);
+const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+
+function readingTime(body) {
+  return Math.max(1, Math.round(body.trim().split(/\s+/).length / 200));
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://phantasiacreative.com' },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://phantasiacreative.com/blog' },
+  ],
+};
+---
+
+<Base
+  title="Blog"
+  description="Guides and insights on custom 3D, figurines, product design, and game assets from Phantasia Creative Works."
+  jsonLd={breadcrumbJsonLd}
+>
+  <main>
+    <section class="blog-hero">
+      <div class="wrap">
+        <p class="eyebrow" data-reveal>Blog</p>
+        <h1 data-reveal data-delay="1">Notes from the studio.</h1>
+        <p data-reveal data-delay="2">Guides, process, and insight on custom 3D — figurines, product design, and game-ready work.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:20px">
+      <div class="wrap">
+        {posts.length === 0 ? (
+          <p class="muted" style="text-align:center;padding:40px 0">No articles yet. Check back soon.</p>
+        ) : (
+          <div class="post-grid">
+            {posts.map((post) => (
+              <a class="post-card" href={`/blog/${post.id}`}>
+                <div class="post-card__img">
+                  <img src={post.data.cover || '/assets/portfolio/hero.jpg'} alt={post.data.title} loading="lazy" />
+                </div>
+                <div class="post-card__body">
+                  <div class="post-card__meta">
+                    {post.data.tags[0] && <span class="post-card__tag">{post.data.tags[0]}</span>}
+                    <span class="dot-sep"></span>
+                    <span>{fmtDate(post.data.date)}</span>
+                    <span class="dot-sep"></span>
+                    <span>{readingTime(post.body)} min read</span>
+                  </div>
+                  <h2>{post.data.title}</h2>
+                  <p>{post.data.description}</p>
+                  <span class="post-card__more">Read article →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <nav class="pagination" aria-label="Pagination">
+            <span class="disabled">← Prev</span>
+            <span class="current">1 / {totalPages}</span>
+            <a href="/blog/page/2">Next →</a>
+          </nav>
+        )}
+      </div>
+    </section>
+  </main>
+</Base>

@@ -1,0 +1,12 @@
+{
+  "name": "Phantasia Creative Works",
+  "short_name": "Phantasia",
+  "description": "A custom 3D studio transforming ideas into reality.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    { "src": "/assets/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
