@@ -158,13 +158,14 @@ h3{font-size:1.3rem}
 .strip__item span{font-size:.84rem;color:var(--muted)}
 
 /* ---- clients ---- */
-.clients__row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(32px,5vw,64px);margin-top:8px}
+/* logos sit on a white card so they read in full colour in BOTH light and dark mode */
+.clients__row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(32px,5vw,64px);margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:30px clamp(24px,5vw,48px)}
+/* dark mode: soft off-white plaque (not glaring white) so black logos still read but it blends with the design */
+[data-theme="dark"] .clients__row{background:#ECEEF2;border-color:#30343C;box-shadow:0 1px 24px rgba(0,0,0,.25)}
 /* every logo gets the SAME box; object-fit:contain scales each to fit, --s optically nudges one logo */
-.clients__logo{width:148px;height:56px;object-fit:contain;transform:scale(var(--s,1));opacity:.6;filter:grayscale(1);transition:opacity .25s ease,filter .25s ease}
-.clients__logo:hover{opacity:1;filter:grayscale(0)}
-[data-theme="dark"] .clients__logo{filter:grayscale(1) brightness(0) invert(1);opacity:.7}
-[data-theme="dark"] .clients__logo:hover{filter:none;opacity:1}
-@media(max-width:680px){.clients__logo{width:112px;height:44px}}
+.clients__logo{width:148px;height:56px;object-fit:contain;transform:scale(var(--s,1));opacity:.85;transition:opacity .25s ease}
+.clients__logo:hover{opacity:1}
+@media(max-width:680px){.clients__row{gap:28px;padding:24px}.clients__logo{width:112px;height:44px}}
 
 /* ---- services ---- */
 .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
