@@ -380,14 +380,13 @@ const serviceJsonLd = {
           var incoming = c.layers[1 - c.active];
           var outgoing = c.layers[c.active];
           var doFade = function () {
+            incoming.classList.remove('is-active'); /* ensure it starts at opacity 0 */
             incoming.style.zIndex = '2';
             outgoing.style.zIndex = '1';
+            void incoming.offsetWidth; /* force a reflow so the next opacity change animates */
+            incoming.classList.add('is-active');
             if (c.bubble && c.bubble.textContent !== item.label) c.bubble.textContent = item.label;
             c.active = 1 - c.active;
-            /* paint incoming at opacity 0 first, then flip the class so the fade reliably runs */
-            requestAnimationFrame(function () {
-              requestAnimationFrame(function () { incoming.classList.add('is-active'); });
-            });
             /* once fully covered, drop the old layer (hidden underneath, no flicker) */
             setTimeout(function () { outgoing.classList.remove('is-active'); }, FADE + 120);
           };
