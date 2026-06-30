@@ -1,16 +1,22 @@
 ---
 import fs from 'node:fs';
+import path from 'node:path';
 import Base from '../layouts/Base.astro';
 import { SITE } from '../config';
 
 // ---- Portfolio: auto-discovered from /public/assets/portfolio at build time ----
 // Drop images in following the naming convention (character-*, product-*, game-*)
 // and they join the rotation automatically — no markup changes needed.
-const portfolioDir = new URL('../../public/assets/portfolio/', import.meta.url);
-const portfolioFiles = fs
-  .readdirSync(portfolioDir)
-  .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f))
-  .sort();
+// Resolve from the project root (cwd during `astro build`) — robust across platforms.
+let portfolioFiles = [];
+try {
+  portfolioFiles = fs
+    .readdirSync(path.join(process.cwd(), 'public', 'assets', 'portfolio'))
+    .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f))
+    .sort();
+} catch (e) {
+  portfolioFiles = [];
+}
 const byCategory = (prefix) =>
   portfolioFiles.filter((f) => f.startsWith(`${prefix}-`)).map((f) => `/assets/portfolio/${f}`);
 
