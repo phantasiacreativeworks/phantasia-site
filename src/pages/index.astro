@@ -178,7 +178,7 @@ const serviceJsonLd = {
         <div class="head center" data-reveal><p class="eyebrow">Brands We've Worked With</p><h2>A few of the brands and creators we've collaborated with.</h2></div>
         <div class="clients__row" data-reveal>
           {clients.map((c) => (
-            <img class="clients__logo" src={c.logo} alt={`${c.name} logo`} style={`--s:${c.scale}`} loading="lazy" />
+            <img class="clients__logo" src={c.logo} alt={`${c.name} logo`} style={`--s:${c.scale}`} width="148" height="56" loading="lazy" />
           ))}
         </div>
         <div class="head center" data-reveal style="margin-top:64px"><p class="eyebrow">What clients say</p></div>
@@ -239,10 +239,15 @@ const serviceJsonLd = {
   <script is:inline>
     /* FAQ accordion + availability bars (homepage only) */
     document.querySelectorAll('.qa__q').forEach(function (q) {
+      q.setAttribute('aria-expanded', 'false');
       q.addEventListener('click', function () {
         var qa = q.parentElement, a = q.nextElementSibling, open = qa.classList.contains('open');
-        document.querySelectorAll('.qa').forEach(function (x) { x.classList.remove('open'); x.querySelector('.qa__a').style.maxHeight = null; });
-        if (!open) { qa.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+        document.querySelectorAll('.qa').forEach(function (x) {
+          x.classList.remove('open');
+          x.querySelector('.qa__a').style.maxHeight = null;
+          x.querySelector('.qa__q').setAttribute('aria-expanded', 'false');
+        });
+        if (!open) { qa.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; q.setAttribute('aria-expanded', 'true'); }
       });
     });
     (function () {

@@ -14,7 +14,10 @@ export async function GET(context) {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
+      author: post.data.author,
+      categories: post.data.tags,
       link: `/blog/${post.id}`,
     })),
+    customData: '<language>en-us</language>',
   });
 }

@@ -36,7 +36,7 @@ const baseJsonLd = [
     url: SITE.domain,
     email: SITE.email,
     logo: new URL('/assets/logo.png', SITE.domain).href,
-    sameAs: [SITE.youtube],
+    sameAs: [SITE.youtube, SITE.instagram, SITE.twitter],
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'South Tangerang',
@@ -73,6 +73,9 @@ const allJsonLd = jsonLd
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={description} />
 <meta property="og:locale" content={SITE.locale} />
 {type === 'article' && publishedTime && (
   <meta property="article:published_time" content={publishedTime} />
@@ -84,12 +87,17 @@ const allJsonLd = jsonLd
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImageUrl} />
-<meta name="twitter:site" content={SITE.twitter} />
+<meta name="twitter:image:alt" content={description} />
+<meta name="twitter:site" content={SITE.twitterHandle} />
+<meta name="twitter:creator" content={SITE.twitterHandle} />
 
 <!-- Icons / PWA -->
 <link rel="icon" type="image/png" href="/assets/icon.png" />
 <link rel="apple-touch-icon" href="/assets/icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
+
+<!-- Feed discovery -->
+<link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Blog`} href={new URL('/rss.xml', SITE.domain).href} />
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0E1014" media="(prefers-color-scheme: dark)" />
 
@@ -106,11 +114,22 @@ const allJsonLd = jsonLd
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 ))}
 
-<!-- Google Analytics 4 (standard gtag.js) -->
-<script async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.ga4}`}></script>
-<script is:inline define:vars={{ ga: SITE.ga4 }}>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
-  gtag('config', ga);
-</script>
+<!-- Analytics: production builds only, so dev traffic never pollutes your stats -->
+{import.meta.env.PROD && SITE.ga4 && (
+  <Fragment>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.ga4}`}></script>
+    <script is:inline define:vars={{ ga: SITE.ga4 }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', ga);
+    </script>
+  </Fragment>
+)}
+{import.meta.env.PROD && SITE.cloudflareToken && (
+  <script
+    defer
+    src="https://static.cloudflareinsights.com/beacon.min.js"
+    data-cf-beacon={`{"token": "${SITE.cloudflareToken}"}`}
+  ></script>
+)}

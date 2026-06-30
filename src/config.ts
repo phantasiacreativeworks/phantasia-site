@@ -11,8 +11,12 @@ export const SITE = {
   locale: 'en_US',
   location: 'South Tangerang, Indonesia',
   ga4: 'G-PXMJL5R1RG',
+  // Cloudflare Web Analytics: paste the token from your CF dashboard (Analytics → Web Analytics).
+  // Leave empty to disable. Loads in production only.
+  cloudflareToken: '',
   ogImage: '/assets/og-image.jpg',
   twitter: 'https://x.com/PhantasiaWorks',
+  twitterHandle: '@PhantasiaWorks',
   founded: '2024',
 };
 
