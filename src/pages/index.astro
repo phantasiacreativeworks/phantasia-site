@@ -1,6 +1,56 @@
 ---
+import fs from 'node:fs';
 import Base from '../layouts/Base.astro';
 import { SITE } from '../config';
+
+// ---- Portfolio: auto-discovered from /public/assets/portfolio at build time ----
+// Drop images in following the naming convention (character-*, product-*, game-*)
+// and they join the rotation automatically — no markup changes needed.
+const portfolioDir = new URL('../../public/assets/portfolio/', import.meta.url);
+const portfolioFiles = fs
+  .readdirSync(portfolioDir)
+  .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f))
+  .sort();
+const byCategory = (prefix) =>
+  portfolioFiles.filter((f) => f.startsWith(`${prefix}-`)).map((f) => `/assets/portfolio/${f}`);
+
+// Each image carries its own category label so the mixed card can relabel as it rotates.
+const tag = (files, label) => files.map((src) => ({ src, label }));
+const characters = tag(byCategory('character'), 'Character Sculpting');
+const products = tag(byCategory('product'), 'Product Design');
+const games = tag(byCategory('game'), 'Game Asset');
+
+// Grid layout (3×2). Top-right is a "mixed" card that alternates Character/Product.
+// Game lives only in the bottom-right card but rotates through every game-* image.
+//   mode 'cat' → cycles one category;  mode 'mix' → alternates two categories
+const portfolioLayout = [
+  { mode: 'cat', pool: characters }, // top-left
+  { mode: 'cat', pool: products },   // top-middle
+  { mode: 'mix', a: characters, b: products }, // top-right (mixed)
+  { mode: 'cat', pool: characters }, // bottom-left
+  { mode: 'cat', pool: products },   // bottom-middle
+  { mode: 'cat', pool: games },      // bottom-right (Game)
+];
+
+// At runtime a single shared clock shows pool[(tick + offset) % len]. Dedicated cards
+// of a category take offsets 0,1…; the mixed card always uses offset 2 ("third slot"),
+// so it can never show the same image as a dedicated card of the same category.
+const seen = {};
+const portfolioCards = portfolioLayout
+  .map((card) => {
+    if (card.mode === 'mix') {
+      if (!card.a.length && !card.b.length) return null;
+      const offset = 2;
+      const init = card.a.length ? card.a[offset % card.a.length] : card.b[offset % card.b.length];
+      return { mode: 'mix', a: card.a, b: card.b, offset, init };
+    }
+    if (!card.pool.length) return null; // skip if category has no images yet
+    const key = card.pool[0].label;
+    const offset = seen[key] ?? 0;
+    seen[key] = offset + 1;
+    return { mode: 'cat', pool: card.pool, offset, init: card.pool[offset % card.pool.length] };
+  })
+  .filter(Boolean);
 
 // Clients featured in the social-proof strip
 // scale = optical nudge (1 = default). Square icon+wordmark logos read large, so trim them slightly.
@@ -96,12 +146,20 @@ const serviceJsonLd = {
           <h2>Selected work.</h2>
         </div>
         <div class="pgrid" data-reveal>
-          <figure class="pcard"><img src="/assets/portfolio/character-1.jpg" alt="Chibi anime swordsman character sculpt modeled for figurine printing" width="1000" height="1000" loading="lazy" /><span class="pcard__bubble">Character Sculpting</span></figure>
-          <figure class="pcard"><img src="/assets/portfolio/product-1.jpg" alt="Cat-ear shaker water bottle product design rendered in purple" width="1000" height="1000" loading="lazy" /><span class="pcard__bubble">Product Design</span></figure>
-          <figure class="pcard"><img src="/assets/portfolio/game-1.jpg" alt="Stylized male game character holding a sword, rendered in engine" width="1000" height="1000" loading="lazy" /><span class="pcard__bubble">Game Asset</span></figure>
-          <figure class="pcard"><img src="/assets/portfolio/character-3.jpg" alt="Detailed female anime character sculpt with flowing hair for figurine printing" width="1000" height="1000" loading="lazy" /><span class="pcard__bubble">Character Sculpting</span></figure>
-          <figure class="pcard"><img src="/assets/portfolio/game-2.jpg" alt="Cat-eared schoolgirl game character in a sailor uniform, rendered in engine" width="1000" height="1000" loading="lazy" /><span class="pcard__bubble">Game Asset</span></figure>
-          <figure class="pcard"><img src="/assets/portfolio/product-2.jpg" alt="Custom keycap product design rendered in studio lighting" width="1000" height="1000" loading="lazy" /><span class="pcard__bubble">Product Design</span></figure>
+          {portfolioCards.map((card) => (
+            <figure
+              class="pcard"
+              data-mode={card.mode}
+              data-offset={card.offset}
+              data-pool={card.mode === 'cat' ? JSON.stringify(card.pool) : undefined}
+              data-a={card.mode === 'mix' ? JSON.stringify(card.a) : undefined}
+              data-b={card.mode === 'mix' ? JSON.stringify(card.b) : undefined}
+            >
+              <img class="pcard__img is-active" src={card.init.src} alt={`${card.init.label} — Phantasia Creative Works portfolio`} width="1000" height="1000" loading="lazy" />
+              <img class="pcard__img" src={card.init.src} alt="" aria-hidden="true" width="1000" height="1000" loading="lazy" />
+              <span class="pcard__bubble">{card.init.label}</span>
+            </figure>
+          ))}
         </div>
         <div style="text-align:center;margin-top:36px">
           <a class="viewall" href={SITE.youtube} target="_blank" rel="noopener">View all work →</a>
@@ -263,6 +321,72 @@ const serviceJsonLd = {
           io2.observe(slots);
         }
       }
+    })();
+
+    /* Portfolio auto-rotation: one shared clock, synchronized crossfade, no duplicates */
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+      var INTERVAL = 6000; /* calm hold between changes */
+      var FADE = 1500;     /* must match the .pcard__img opacity transition in CSS */
+      var parse = function (el, attr) { try { return JSON.parse(el.getAttribute(attr)); } catch (e) { return null; } };
+      var cards = [];
+      document.querySelectorAll('.pcard[data-mode]').forEach(function (card) {
+        var mode = card.getAttribute('data-mode');
+        var offset = parseInt(card.getAttribute('data-offset'), 10) || 0;
+        var layers = card.querySelectorAll('.pcard__img');
+        var bubble = card.querySelector('.pcard__bubble');
+        if (layers.length < 2) return;
+        var entry = { mode: mode, offset: offset, layers: layers, bubble: bubble, active: 0 };
+        if (mode === 'mix') {
+          entry.a = parse(card, 'data-a') || [];
+          entry.b = parse(card, 'data-b') || [];
+          if (entry.a.length + entry.b.length < 2) return;
+        } else {
+          entry.pool = parse(card, 'data-pool') || [];
+          if (entry.pool.length < 2) return; /* single image never rotates */
+        }
+        cards.push(entry);
+      });
+      if (!cards.length) return;
+
+      /* preload everything once so crossfades never wait on the network */
+      cards.forEach(function (c) {
+        (c.pool || c.a.concat(c.b)).forEach(function (it) { var p = new Image(); p.src = it.src; });
+      });
+
+      function pick(c, tick) {
+        if (c.mode === 'mix') {
+          var useA = (tick % 2 === 0); /* alternate Character / Product each beat */
+          var pool = useA && c.a.length ? c.a : (c.b.length ? c.b : c.a);
+          return pool[(tick + c.offset) % pool.length];
+        }
+        return c.pool[(tick + c.offset) % c.pool.length];
+      }
+
+      var tick = 0;
+      function advance() {
+        if (document.hidden) return; /* don't churn while tab is hidden */
+        tick++;
+        cards.forEach(function (c) {
+          var item = pick(c, tick);
+          var incoming = c.layers[1 - c.active];
+          var outgoing = c.layers[c.active];
+          var swap = function () {
+            /* raise incoming above the still-opaque outgoing, then fade it in (clean dissolve) */
+            incoming.style.zIndex = '2';
+            outgoing.style.zIndex = '1';
+            incoming.classList.add('is-active');
+            if (c.bubble && c.bubble.textContent !== item.label) c.bubble.textContent = item.label;
+            c.active = 1 - c.active;
+            /* once fully covered, drop the old layer (hidden underneath, so no flicker) */
+            setTimeout(function () { outgoing.classList.remove('is-active'); }, FADE);
+          };
+          if (incoming.getAttribute('src') === item.src) { swap(); return; }
+          incoming.src = item.src;
+          if (incoming.complete) swap(); else incoming.onload = swap;
+        });
+      }
+      setInterval(advance, INTERVAL);
     })();
   </script>
 </Base>

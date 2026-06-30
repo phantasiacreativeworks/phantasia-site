@@ -195,9 +195,7 @@ h3{font-size:1.3rem}
   background:var(--alt);border:1px solid var(--line);cursor:pointer;
   transition:box-shadow .35s ease,transform .35s ease;
 }
-.pcard img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
 .pcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
-.pcard:hover img{transform:scale(1.04)}
 .pcard.hide{display:none}
 @media(max-width:760px){.pgrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:460px){.pgrid{grid-template-columns:1fr}}
@@ -430,9 +428,10 @@ body{padding-bottom:60px}
 /* Portfolio: clean grid with real renders + UI bubble */
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .pcard{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/5;background:var(--alt);border:1px solid var(--line);transition:box-shadow .35s var(--ease),transform .35s var(--ease)}
-.pcard img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease)}
+.pcard__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease-in-out,transform .6s var(--ease)}
+.pcard__img.is-active{opacity:1}
 .pcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
-.pcard:hover img{transform:scale(1.04)}
+.pcard:hover .pcard__img.is-active{transform:scale(1.04)}
 .pcard__bubble{position:absolute;left:14px;bottom:14px;background:rgba(15,16,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font-size:.76rem;font-weight:500;padding:6px 13px;border-radius:100px}
 @media(max-width:760px){.pgrid{grid-template-columns:repeat(2,1fr);gap:12px}}
 @media(max-width:430px){.pgrid{grid-template-columns:1fr}}
