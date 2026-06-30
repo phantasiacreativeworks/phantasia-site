@@ -3,7 +3,11 @@
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: geolocation=(), microphone=(), camera=()
+# Static images keep their filenames across updates, so cache for a day and
+# revalidate — swapped images go live within ~24h with no manual purge.
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+# Astro's build output is content-hashed (filename changes every build),
+# so it's safe to cache forever as immutable.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
