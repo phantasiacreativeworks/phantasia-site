@@ -69,7 +69,7 @@ const shareUrl = encodeURIComponent(url);
   author={post.data.author}
   jsonLd={[articleJsonLd, breadcrumbJsonLd]}
 >
-  <main class="article">
+  <main class="article" id="main-content">
     <div class="wrap">
       <div class="article__head">
         {post.data.tags[0] && <span class="article__tag">{post.data.tags[0]}</span>}

@@ -123,7 +123,7 @@ const serviceJsonLd = {
 ---
 
 <Base jsonLd={[serviceJsonLd, faqJsonLd]}>
-  <main id="top">
+  <main id="main-content">
     <!-- HERO -->
     <section class="hero">
       <div class="wrap hero__grid">
@@ -400,9 +400,12 @@ const serviceJsonLd = {
           entry.pool = parse(card, 'data-pool') || [];
           if (entry.pool.length < 2) return; /* single image never rotates */
         }
-        /* pause this card's rotation while the visitor is inspecting it */
-        card.addEventListener('mouseenter', function () { entry.paused = true; });
-        card.addEventListener('mouseleave', function () { entry.paused = false; });
+        /* pause this card's rotation while the visitor is inspecting it —
+           real pointers only; on touch, mouseenter fires on tap and never releases */
+        if (window.matchMedia('(hover:hover)').matches) {
+          card.addEventListener('mouseenter', function () { entry.paused = true; });
+          card.addEventListener('mouseleave', function () { entry.paused = false; });
+        }
         cards.push(entry);
       });
       if (!cards.length) return;
@@ -432,6 +435,7 @@ const serviceJsonLd = {
           var incoming = c.layers[1 - c.active];
           var outgoing = c.layers[c.active];
           var doFade = function () {
+            incoming.onload = null; /* never let a stale load handler re-trigger a fade */
             incoming.classList.remove('is-active'); /* ensure it starts at opacity 0 */
             incoming.style.zIndex = '2';
             outgoing.style.zIndex = '1';
@@ -442,6 +446,8 @@ const serviceJsonLd = {
             /* once fully covered, drop the old layer (hidden underneath, no flicker) */
             setTimeout(function () { outgoing.classList.remove('is-active'); }, FADE + 120);
           };
+          incoming.onload = null; /* clear any pending handler from a slow previous cycle */
+          outgoing.onload = null;
           if (incoming.getAttribute('src') === item.src) { doFade(); return; }
           incoming.src = item.src;
           if (incoming.complete) doFade(); else incoming.onload = doFade;
@@ -461,15 +467,24 @@ const serviceJsonLd = {
         lbImg.alt = label;
         lbCap.textContent = label;
         lb.classList.add('open');
+        /* lock scroll WITHOUT the scrollbar-removal layout jump: pad by the scrollbar width */
+        var sw = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.overflow = 'hidden';
+        if (sw > 0) document.body.style.paddingRight = sw + 'px';
       }
       function closeLb() {
         lb.classList.remove('open');
         document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
       }
       document.querySelectorAll('.pcard').forEach(function (card) {
         function view() {
-          var img = card.querySelector('.pcard__img.is-active') || card.querySelector('.pcard__img');
+          /* mid-fade there are two active layers — take the incoming one (z-index 2) */
+          var actives = card.querySelectorAll('.pcard__img.is-active');
+          var img = actives[0] || card.querySelector('.pcard__img');
+          for (var i = 0; i < actives.length; i++) {
+            if (actives[i].style.zIndex === '2') { img = actives[i]; break; }
+          }
           var bubble = card.querySelector('.pcard__bubble');
           if (img) openLb(img.getAttribute('src'), bubble ? bubble.textContent : '');
         }

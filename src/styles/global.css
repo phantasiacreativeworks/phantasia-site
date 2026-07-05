@@ -41,6 +41,10 @@
 html{scroll-behavior:smooth}
 /* anchor jumps (#pricing etc.) land clear of the fixed nav */
 [id]{scroll-margin-top:88px}
+
+/* skip link: invisible until focused via keyboard (Tab) */
+.skip-link{position:fixed;top:-100px;left:16px;z-index:200;background:var(--accent);color:#fff;padding:10px 18px;border-radius:10px;font-weight:500;transition:top .2s ease}
+.skip-link:focus{top:16px;outline:2px solid #fff;outline-offset:2px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 
 body{
