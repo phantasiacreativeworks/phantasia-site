@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import Base from '../layouts/Base.astro';
-import { SITE } from '../config';
+import { SITE, SLOTS } from '../config';
 
 // ---- Portfolio: auto-discovered from /public/assets/portfolio at build time ----
 // Drop images in following the naming convention (character-*, product-*, game-*)
@@ -70,6 +70,39 @@ const clients = [
   { name: 'Fantech', logo: '/assets/clients/fantech.png', scale: 0.9 },
 ];
 
+// FAQ rich-results schema — answers must mirror the on-page FAQ text exactly
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How does payment work?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Half up front to start, the rest before final files. Invoices hold for 72 hours.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'How many revisions do I get?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Up to five rounds while we sculpt and detail. Major reworks after rendering are billed separately, since they reset a lot of work.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'How long does a project take?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Most projects take two weeks to a month, depending on detail and scope.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who owns the final work?',
+      acceptedAnswer: { '@type': 'Answer', text: 'You get full personal use. We keep the right to show it in our portfolio. Full rights can transfer on request.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I use it commercially?',
+      acceptedAnswer: { '@type': 'Answer', text: "Yes, with a separate commercial license. Mention it early and we'll sort the details." },
+    },
+  ],
+};
+
 // Service schema for SEO
 const serviceJsonLd = {
   '@context': 'https://schema.org',
@@ -89,7 +122,7 @@ const serviceJsonLd = {
 };
 ---
 
-<Base jsonLd={serviceJsonLd}>
+<Base jsonLd={[serviceJsonLd, faqJsonLd]}>
   <main id="top">
     <!-- HERO -->
     <section class="hero">
@@ -113,10 +146,10 @@ const serviceJsonLd = {
     <!-- TRUST STRIP -->
     <div class="strip">
       <div class="wrap strip__inner">
-        <div class="strip__item"><b>Characters</b><span>sculpted from scratch</span></div>
-        <div class="strip__item"><b>Products</b><span>concept to production</span></div>
-        <div class="strip__item"><b>Game assets</b><span>built for engines</span></div>
-        <div class="strip__item"><b>Files</b><span>ready to be made</span></div>
+        <div class="strip__item"><b>Characters</b><span>we sculpt yours from zero</span></div>
+        <div class="strip__item"><b>Products</b><span>we design it, you manufacture it</span></div>
+        <div class="strip__item"><b>Game assets</b><span>drop them into your engine</span></div>
+        <div class="strip__item"><b>Files</b><span>you keep everything</span></div>
       </div>
     </div>
 
@@ -208,8 +241,8 @@ const serviceJsonLd = {
       <div class="wrap">
         <div class="head" data-reveal>
           <p class="eyebrow">Pricing</p>
-          <h2>Simple, scoped pricing.</h2>
-          <p class="lead">Three tiers that scale with detail. Every project includes a render and a file you keep.</p>
+          <h2>Simple pricing, shaped to your project.</h2>
+          <p class="lead">Three ranges that flex with complexity. Tell us the idea, we'll tell you where it lands. Every project includes a render and a file you keep.</p>
         </div>
         <div class="price-list" data-reveal>
           <div class="price-row">
@@ -242,11 +275,13 @@ const serviceJsonLd = {
           <div class="hero__actions" style="margin-top:24px"><a class="btn btn--primary" href="#contact">Book a slot</a></div>
         </div>
         <div class="slots" id="slots" data-reveal data-delay="1">
-          <div class="slot"><span class="slot__n">01</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill="80%"></i></span><span class="slot__pct">80%</span></span></div>
-          <div class="slot"><span class="slot__n">02</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill="50%"></i></span><span class="slot__pct">50%</span></span></div>
-          <div class="slot"><span class="slot__n">03</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill="20%"></i></span><span class="slot__pct">20%</span></span></div>
-          <div class="slot slot--open"><span class="slot__n">04</span><span class="slot__label">Open</span><span class="slot__bar">Available</span></div>
-          <div class="slot slot--open"><span class="slot__n">05</span><span class="slot__label">Open</span><span class="slot__bar">Available</span></div>
+          {SLOTS.map((slot, i) => (
+            slot.open ? (
+              <div class="slot slot--open"><span class="slot__n">{String(i + 1).padStart(2, '0')}</span><span class="slot__label">Open</span><span class="slot__bar">Available</span></div>
+            ) : (
+              <div class="slot"><span class="slot__n">{String(i + 1).padStart(2, '0')}</span><span class="slot__label">In progress</span><span class="slot__bar"><span class="bar"><i data-fill={`${slot.fill}%`}></i></span><span class="slot__pct">{slot.fill}%</span></span></div>
+            )
+          ))}
         </div>
       </div>
     </section>

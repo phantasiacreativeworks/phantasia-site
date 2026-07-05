@@ -5,7 +5,10 @@ export const SITE = {
   description:
     'A custom 3D studio transforming ideas into reality. Character sculpting, product design, and game-ready assets.',
   email: 'hello@phantasiacreative.com',
-  whatsapp: 'https://wa.me/6287787524223',
+  // Pre-filled opener so visitors never face a blank chat box — edit the text freely.
+  whatsapp:
+    'https://wa.me/6287787524223?text=' +
+    encodeURIComponent("Hi! I'd like to start a project with Phantasia."),
   instagram: 'https://instagram.com/phantasiacreativeworks',
   youtube: 'https://www.youtube.com/@PhantasiaCreative',
   locale: 'en_US',
@@ -30,3 +33,13 @@ export const NAV = [
 ];
 
 export const POSTS_PER_PAGE = 9;
+
+// Availability slots shown on the homepage. Update these as work moves —
+// fill is % complete for in-progress slots; omit fill (or set open: true) for open slots.
+export const SLOTS = [
+  { open: false, fill: 80 },
+  { open: false, fill: 50 },
+  { open: false, fill: 20 },
+  { open: true },
+  { open: true },
+];

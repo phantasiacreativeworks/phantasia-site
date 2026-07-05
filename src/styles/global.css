@@ -39,6 +39,8 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+/* anchor jumps (#pricing etc.) land clear of the fixed nav */
+[id]{scroll-margin-top:88px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 
 body{
