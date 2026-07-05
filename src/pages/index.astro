@@ -462,6 +462,9 @@ const serviceJsonLd = {
       var lbImg = document.getElementById('lightboxImg');
       var lbCap = document.getElementById('lightboxCap');
       if (!lb || !lbImg) return;
+      /* fixed-position bars stretch to the viewport, so they need the same
+         scrollbar compensation as the body or their content shifts */
+      var fixedBars = [document.getElementById('nav'), document.querySelector('.floating-cta')].filter(Boolean);
       function openLb(src, label) {
         lbImg.src = src;
         lbImg.alt = label;
@@ -470,12 +473,16 @@ const serviceJsonLd = {
         /* lock scroll WITHOUT the scrollbar-removal layout jump: pad by the scrollbar width */
         var sw = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.overflow = 'hidden';
-        if (sw > 0) document.body.style.paddingRight = sw + 'px';
+        if (sw > 0) {
+          document.body.style.paddingRight = sw + 'px';
+          fixedBars.forEach(function (el) { el.style.right = sw + 'px'; });
+        }
       }
       function closeLb() {
         lb.classList.remove('open');
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
+        fixedBars.forEach(function (el) { el.style.right = ''; });
       }
       document.querySelectorAll('.pcard').forEach(function (card) {
         function view() {
