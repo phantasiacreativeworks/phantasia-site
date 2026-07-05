@@ -158,6 +158,9 @@ const serviceJsonLd = {
           {portfolioCards.map((card) => (
             <figure
               class="pcard"
+              tabindex="0"
+              role="button"
+              aria-label={`View ${card.init.label} render larger`}
               data-mode={card.mode}
               data-pool={card.mode === 'cat' ? JSON.stringify(card.pool) : undefined}
               data-a={card.mode === 'mix' ? JSON.stringify(card.a) : undefined}
@@ -166,8 +169,18 @@ const serviceJsonLd = {
               <img class="pcard__img is-active" src={card.init.src} alt={`${card.init.label} — Phantasia Creative Works portfolio`} width="1000" height="1000" loading="lazy" />
               <img class="pcard__img" src={card.init.src} alt="" aria-hidden="true" width="1000" height="1000" loading="lazy" />
               <span class="pcard__bubble">{card.init.label}</span>
+              <span class="pcard__hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path><path d="M11 8v6M8 11h6"></path></svg></span>
             </figure>
           ))}
+        </div>
+
+        <!-- lightbox viewer for portfolio renders -->
+        <div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Portfolio image viewer">
+          <div class="lb__frame">
+            <button class="lb__close" id="lightboxClose" aria-label="Close viewer">×</button>
+            <img class="lb__img" id="lightboxImg" src="" alt="" />
+            <p class="lb__cap" id="lightboxCap"></p>
+          </div>
         </div>
         <div style="text-align:center;margin-top:36px">
           <a class="viewall" href={SITE.youtube} target="_blank" rel="noopener">View all work →</a>
@@ -343,7 +356,7 @@ const serviceJsonLd = {
         var layers = card.querySelectorAll('.pcard__img');
         var bubble = card.querySelector('.pcard__bubble');
         if (layers.length < 2) return;
-        var entry = { mode: mode, layers: layers, bubble: bubble, active: 0, step: 0 };
+        var entry = { mode: mode, layers: layers, bubble: bubble, active: 0, step: 0, paused: false };
         if (mode === 'mix') {
           entry.a = parse(card, 'data-a') || [];
           entry.b = parse(card, 'data-b') || [];
@@ -352,6 +365,9 @@ const serviceJsonLd = {
           entry.pool = parse(card, 'data-pool') || [];
           if (entry.pool.length < 2) return; /* single image never rotates */
         }
+        /* pause this card's rotation while the visitor is inspecting it */
+        card.addEventListener('mouseenter', function () { entry.paused = true; });
+        card.addEventListener('mouseleave', function () { entry.paused = false; });
         cards.push(entry);
       });
       if (!cards.length) return;
@@ -376,6 +392,7 @@ const serviceJsonLd = {
       function advance() {
         if (document.hidden) return; /* don't churn while tab is hidden */
         cards.forEach(function (c) {
+          if (c.paused) return; /* hovered — hold this card */
           var item = pick(c);
           var incoming = c.layers[1 - c.active];
           var outgoing = c.layers[c.active];
@@ -396,6 +413,39 @@ const serviceJsonLd = {
         });
       }
       setInterval(advance, INTERVAL);
+    })();
+
+    /* Portfolio lightbox: click any card to view the currently shown render full-size */
+    (function () {
+      var lb = document.getElementById('lightbox');
+      var lbImg = document.getElementById('lightboxImg');
+      var lbCap = document.getElementById('lightboxCap');
+      if (!lb || !lbImg) return;
+      function openLb(src, label) {
+        lbImg.src = src;
+        lbImg.alt = label;
+        lbCap.textContent = label;
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeLb() {
+        lb.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+      document.querySelectorAll('.pcard').forEach(function (card) {
+        function view() {
+          var img = card.querySelector('.pcard__img.is-active') || card.querySelector('.pcard__img');
+          var bubble = card.querySelector('.pcard__bubble');
+          if (img) openLb(img.getAttribute('src'), bubble ? bubble.textContent : '');
+        }
+        card.addEventListener('click', view);
+        card.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); view(); }
+        });
+      });
+      document.getElementById('lightboxClose').addEventListener('click', function (ev) { ev.stopPropagation(); closeLb(); });
+      lb.addEventListener('click', function (ev) { if (ev.target === lb) closeLb(); });
+      document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeLb(); });
     })();
   </script>
 </Base>

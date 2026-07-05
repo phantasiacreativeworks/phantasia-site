@@ -434,6 +434,21 @@ body{padding-bottom:60px}
 .pcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
 .pcard:hover .pcard__img.is-active{transform:scale(1.04)}
 .pcard__bubble{position:absolute;left:14px;bottom:14px;z-index:3;background:rgba(15,16,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font-size:.76rem;font-weight:500;padding:6px 13px;border-radius:100px}
+/* "view larger" hint, appears on hover to signal cards are clickable */
+.pcard__hint{position:absolute;right:14px;bottom:14px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(15,16,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(4px);transition:opacity .3s ease,transform .3s ease}
+.pcard:hover .pcard__hint,.pcard:focus-visible .pcard__hint{opacity:1;transform:translateY(0)}
+.pcard__hint svg{width:16px;height:16px}
+.pcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- portfolio lightbox ---- */
+.lb{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:32px;background:rgba(10,11,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.lb.open{opacity:1;pointer-events:auto}
+.lb__frame{position:relative;max-width:min(88vw,760px);max-height:86vh;transform:scale(.96);transition:transform .35s var(--ease)}
+.lb.open .lb__frame{transform:scale(1)}
+.lb__img{display:block;max-width:100%;max-height:80vh;border-radius:18px;box-shadow:0 40px 120px -20px rgba(0,0,0,.7)}
+.lb__cap{margin-top:14px;text-align:center;color:#fff;font-size:.9rem;opacity:.85}
+.lb__close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#11151c;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+@media(max-width:600px){.lb{padding:16px}.lb__close{top:8px;right:8px}}
 @media(max-width:760px){.pgrid{grid-template-columns:repeat(2,1fr);gap:12px}}
 @media(max-width:430px){.pgrid{grid-template-columns:1fr}}
 
