@@ -1,0 +1,154 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Base from '../layouts/Base.astro';
+
+// Same folder-driven discovery as the homepage: drop images into
+// /public/assets/portfolio following the naming convention and they appear here.
+let files = [];
+try {
+  files = fs
+    .readdirSync(path.join(process.cwd(), 'public', 'assets', 'portfolio'))
+    .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f))
+    .sort();
+} catch (e) {
+  files = [];
+}
+
+const cats = {
+  character: 'Character Sculpting',
+  product: 'Product Design',
+  game: 'Game Asset',
+};
+const items = files
+  .map((f) => {
+    const prefix = f.split('-')[0];
+    const label = cats[prefix];
+    return label ? { src: `/assets/portfolio/${f}`, cat: prefix, label } : null;
+  })
+  .filter(Boolean);
+
+const tabs = [
+  { key: 'all', label: 'All work' },
+  { key: 'character', label: 'Characters' },
+  { key: 'product', label: 'Products' },
+  { key: 'game', label: 'Game assets' },
+];
+---
+
+<Base
+  title="Portfolio"
+  description="Selected character sculpts, product designs, and game-ready assets by Phantasia Creative Works."
+>
+  <main id="main-content">
+    <section class="blog-hero">
+      <div class="wrap">
+        <p class="eyebrow" data-reveal>Portfolio</p>
+        <h1 data-reveal data-delay="1">The work we can show.</h1>
+        <p data-reveal data-delay="2">
+          A selection of studio and client work — much of our brand work ships under NDA, so consider this the public half of the story.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:12px">
+      <div class="wrap">
+        <div class="ptabs" data-reveal role="tablist" aria-label="Filter portfolio by category">
+          {tabs.map((t, i) => (
+            <button class={`ptab${i === 0 ? ' active' : ''}`} data-filter={t.key} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>{t.label}</button>
+          ))}
+        </div>
+
+        <div class="pgrid" data-reveal>
+          {items.map((item) => (
+            <figure
+              class="pcard"
+              tabindex="0"
+              role="button"
+              aria-label={`View ${item.label} render larger`}
+              data-cat={item.cat}
+            >
+              <img class="pcard__img is-active" src={item.src} alt={`${item.label} — Phantasia Creative Works portfolio`} width="1000" height="1000" loading="lazy" />
+              <span class="pcard__bubble">{item.label}</span>
+              <span class="pcard__hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path><path d="M11 8v6M8 11h6"></path></svg></span>
+            </figure>
+          ))}
+        </div>
+
+        <div style="text-align:center;margin-top:44px">
+          <a class="btn btn--primary" href="/#contact">Start a project like these</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- lightbox viewer -->
+    <div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Portfolio image viewer">
+      <div class="lb__frame">
+        <button class="lb__close" id="lightboxClose" aria-label="Close viewer">×</button>
+        <img class="lb__img" id="lightboxImg" src="" alt="" />
+        <p class="lb__cap" id="lightboxCap"></p>
+      </div>
+    </div>
+  </main>
+
+  <script is:inline>
+    /* category filter */
+    (function () {
+      var tabs = document.querySelectorAll('.ptab');
+      var cards = document.querySelectorAll('.pcard[data-cat]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var key = tab.getAttribute('data-filter');
+          tabs.forEach(function (t) {
+            t.classList.toggle('active', t === tab);
+            t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+          });
+          cards.forEach(function (card) {
+            card.classList.toggle('hide', key !== 'all' && card.getAttribute('data-cat') !== key);
+          });
+        });
+      });
+    })();
+
+    /* lightbox (same behavior as homepage) */
+    (function () {
+      var lb = document.getElementById('lightbox');
+      var lbImg = document.getElementById('lightboxImg');
+      var lbCap = document.getElementById('lightboxCap');
+      if (!lb || !lbImg) return;
+      var fixedBars = [document.getElementById('nav'), document.querySelector('.floating-cta')].filter(Boolean);
+      function openLb(src, label) {
+        lbImg.src = src;
+        lbImg.alt = label;
+        lbCap.textContent = label;
+        lb.classList.add('open');
+        var sw = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = 'hidden';
+        if (sw > 0) {
+          document.body.style.paddingRight = sw + 'px';
+          fixedBars.forEach(function (el) { el.style.right = sw + 'px'; });
+        }
+      }
+      function closeLb() {
+        lb.classList.remove('open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        fixedBars.forEach(function (el) { el.style.right = ''; });
+      }
+      document.querySelectorAll('.pcard').forEach(function (card) {
+        function view() {
+          var img = card.querySelector('.pcard__img');
+          var bubble = card.querySelector('.pcard__bubble');
+          if (img) openLb(img.getAttribute('src'), bubble ? bubble.textContent : '');
+        }
+        card.addEventListener('click', view);
+        card.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); view(); }
+        });
+      });
+      document.getElementById('lightboxClose').addEventListener('click', function (ev) { ev.stopPropagation(); closeLb(); });
+      lb.addEventListener('click', function (ev) { if (ev.target === lb) closeLb(); });
+      document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeLb(); });
+    })();
+  </script>
+</Base>

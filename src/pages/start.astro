@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config';
+---
+
+<Base title="Start a project" description="Send Phantasia Creative Works a project brief — character sculpts, product design, or game assets." showFloatingCta={false}>
+  <main id="main-content">
+    <section class="blog-hero">
+      <div class="wrap">
+        <p class="eyebrow" data-reveal>Start a project</p>
+        <h1 data-reveal data-delay="1">Tell us what you're imagining.</h1>
+        <p data-reveal data-delay="2">
+          Prefer chat? <a class="inline-link" href={SITE.whatsapp} target="_blank" rel="noopener">Message us on WhatsApp</a> — or send a written brief below and we'll reply within a day.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:12px">
+      <div class="wrap">
+        {SITE.formEndpoint ? (
+          <form class="form" method="POST" action={SITE.formEndpoint} data-reveal>
+            <div class="form__grid">
+              <div class="form__row">
+                <label for="f-name">Your name</label>
+                <input id="f-name" type="text" name="name" required autocomplete="name" />
+              </div>
+              <div class="form__row">
+                <label for="f-email">Email</label>
+                <input id="f-email" type="email" name="email" required autocomplete="email" />
+              </div>
+              <div class="form__row">
+                <label for="f-type">Project type</label>
+                <select id="f-type" name="project_type" required>
+                  <option value="" disabled selected>Choose one…</option>
+                  <option>Character sculpting</option>
+                  <option>Product design</option>
+                  <option>Game asset</option>
+                  <option>Something else</option>
+                </select>
+              </div>
+              <div class="form__row">
+                <label for="f-budget">Budget range</label>
+                <select id="f-budget" name="budget" required>
+                  <option value="" disabled selected>Choose one…</option>
+                  <option>$100 – 400</option>
+                  <option>$400 – 600</option>
+                  <option>$600 – 1,000</option>
+                  <option>Above $1,000</option>
+                  <option>Not sure yet</option>
+                </select>
+              </div>
+            </div>
+            <div class="form__row">
+              <label for="f-desc">Tell us about the project</label>
+              <textarea id="f-desc" name="message" rows="6" required placeholder="What are we making? Any deadlines, sizes, or must-haves?"></textarea>
+            </div>
+            <div class="form__row">
+              <label for="f-refs">Reference links <span class="form__opt">(optional)</span></label>
+              <input id="f-refs" type="text" name="references" placeholder="Drive folders, Pinterest boards, artstation links…" />
+            </div>
+            <div>
+              <button class="btn btn--primary" type="submit">Send the brief</button>
+              <p class="form__note"><span class="dot"></span> Usually replies within a day</p>
+            </div>
+          </form>
+        ) : (
+          <div class="form__fallback" data-reveal>
+            <p>The written-brief form is warming up. Meanwhile, both of these reach us directly:</p>
+            <div class="hero__actions" style="margin-top:20px">
+              <a class="btn btn--primary" href={SITE.whatsapp} target="_blank" rel="noopener">Message on WhatsApp</a>
+              <a class="btn btn--ghost" href={`mailto:${SITE.email}`}>Email the studio</a>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+</Base>

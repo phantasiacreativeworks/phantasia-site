@@ -80,6 +80,18 @@ const { showFloatingCta = true, ...seo } = Astro.props;
           });
         }
 
+        /* conversion events: count WhatsApp/email clicks in GA4 (no-op in dev, gtag absent) */
+        document.querySelectorAll('a[href*="wa.me"], a[href^="mailto:"]').forEach(function (a) {
+          a.addEventListener('click', function () {
+            if (typeof window.gtag === 'function') {
+              window.gtag('event', 'contact_click', {
+                method: a.href.indexOf('wa.me') > -1 ? 'whatsapp' : 'email',
+                page_path: location.pathname,
+              });
+            }
+          });
+        });
+
         /* reveal */
         var rm = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
         if (rm) {

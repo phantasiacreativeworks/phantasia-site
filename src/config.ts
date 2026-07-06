@@ -17,6 +17,10 @@ export const SITE = {
   // Cloudflare Web Analytics: paste the token from your CF dashboard (Analytics → Web Analytics).
   // Leave empty to disable. Loads in production only.
   cloudflareToken: '',
+  // Brief form endpoint: sign up free at formspree.io, create a form, paste its
+  // endpoint here (looks like https://formspree.io/f/abcdwxyz). Empty = form page
+  // shows WhatsApp/email fallback instead.
+  formEndpoint: '',
   ogImage: '/assets/og-image.jpg',
   twitter: 'https://x.com/PhantasiaWorks',
   twitterHandle: '@PhantasiaWorks',
