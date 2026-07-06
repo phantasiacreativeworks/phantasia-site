@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config';
+---
+
+<Base title="Brief received" noindex={true} showFloatingCta={false}>
+  <main id="main-content" class="nf">
+    <span class="thanks__check" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+    </span>
+    <h2>Brief received. Nice one.</h2>
+    <p>We read every brief personally and reply within 24 hours from {SITE.email} — keep an eye on your inbox (and spam folder, just in case).</p>
+    <div class="nf__links">
+      <a class="btn btn--primary" href="/portfolio">Browse the portfolio</a>
+      <a class="btn btn--ghost" href="/">Back home</a>
+    </div>
+  </main>
+</Base>

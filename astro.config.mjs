@@ -7,8 +7,8 @@ export default defineConfig({
   trailingSlash: 'ignore',
   integrations: [
     sitemap({
-      // keep noindex routes (404, paginated blog pages) out of the sitemap
-      filter: (page) => !page.includes('/404') && !page.includes('/blog/page/'),
+      // keep noindex routes (404, paginated blog pages, form thank-you) out of the sitemap
+      filter: (page) => !page.includes('/404') && !page.includes('/blog/page/') && !page.includes('/thanks'),
     }),
   ],
   build: {
