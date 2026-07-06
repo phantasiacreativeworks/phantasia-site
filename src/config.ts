@@ -20,7 +20,7 @@ export const SITE = {
   // Brief form endpoint: sign up free at formspree.io, create a form, paste its
   // endpoint here (looks like https://formspree.io/f/abcdwxyz). Empty = form page
   // shows WhatsApp/email fallback instead.
-  formEndpoint: '',
+  formEndpoint: 'https://formspree.io/f/mwvdyzne',
   ogImage: '/assets/og-image.jpg',
   twitter: 'https://x.com/PhantasiaWorks',
   twitterHandle: '@PhantasiaWorks',
